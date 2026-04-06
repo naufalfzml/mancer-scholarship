@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 
+/// On-chain state for a crowdfunding campaign.
 #[account]
 pub struct Campaign {
     pub creator: Pubkey,
@@ -15,10 +16,10 @@ pub struct Campaign {
 impl Campaign {
     pub const MAX_TITLE_LEN: usize = 50;
     pub const MAX_DESC_LEN: usize = 200;
-    // 32 + 8 + 8 + 8 + 1 + 1 + (4 + 50) + (4 + 200)
     pub const INIT_SPACE: usize = 32 + 8 + 8 + 8 + 1 + 1 + (4 + Self::MAX_TITLE_LEN) + (4 + Self::MAX_DESC_LEN);
 }
 
+/// Tracks a donor's contribution to a campaign. PDA: [b"contribution", campaign, donor]
 #[account]
 pub struct Contribution {
     pub donor: Pubkey,

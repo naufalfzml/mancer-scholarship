@@ -29,6 +29,7 @@ pub struct Contribute<'info> {
     pub vault: SystemAccount<'info>
 }
 
+/// Transfers SOL from donor to campaign vault. Creates contribution PDA on first donation.
 pub fn contribute_handler(ctx: Context<Contribute>, amount: u64) -> Result<()> {
     let campaign_key = ctx.accounts.campaign.key();
     let campaign = &mut ctx.accounts.campaign;

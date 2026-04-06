@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 
+/// Custom error codes for the crowdfunding program.
 #[error_code]
 pub enum CrowdfundingError {
     #[msg("Deadline must be in the future")]

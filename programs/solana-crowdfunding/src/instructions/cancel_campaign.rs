@@ -10,6 +10,7 @@ pub struct CancelCampaign<'info> {
     pub creator: Signer<'info>,
 }
 
+/// Creator cancels a campaign, enabling immediate refunds for donors.
 pub fn cancel_campaign_handler(ctx: Context<CancelCampaign>) -> Result<()> {
     let campaign = &mut ctx.accounts.campaign;
 

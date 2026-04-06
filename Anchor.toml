@@ -6,13 +6,23 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-solana_crowdfunding = "8RjcjbiGt6FxemB4mG3yHvvmnKN6yEQPiwt4a9NDtUH"
+solana_crowdfunding = "BJGqnLChib5nebgzAkLuTDAcddSp9dEYjEMj86XRqTLj"
 
 [provider]
 cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "cargo test"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 
 [hooks]
+
+[test]
+startup_wait = 5000
+shutdown_wait = 2000
+upgradeable = false
+
+[test.validator]
+bind_address = "0.0.0.0"
+ledger = ".anchor/test-ledger"
+rpc_port = 8899

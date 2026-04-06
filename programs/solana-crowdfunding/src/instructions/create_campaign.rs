@@ -16,6 +16,7 @@ pub struct CreateCampaign<'info> {
     pub system_program: Program<'info, System>,
 }
 
+/// Creates a new campaign with goal, deadline, title, and description.
 pub fn create_campaign_handler(
     ctx: Context<CreateCampaign>,
     goal: u64,

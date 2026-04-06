@@ -21,6 +21,7 @@ pub struct Withdraw<'info> {
     pub system_program: Program<'info, System>,
 }
 
+/// Creator claims funds after goal is reached and deadline has passed.
 pub fn withdraw_handler(ctx: Context<Withdraw>) -> Result<()> {
     let campaign_key = ctx.accounts.campaign.key();
     let campaign = &mut ctx.accounts.campaign;

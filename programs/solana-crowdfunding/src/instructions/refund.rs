@@ -28,6 +28,7 @@ pub struct Refund<'info> {
     pub system_program:Program<'info, System>,
 }
 
+/// Refunds donor if campaign is cancelled or goal not reached after deadline.
 pub fn refund_handler(ctx: Context<Refund>) -> Result<()> {
     let campaign_key = ctx.accounts.campaign.key();
     let campaign = &mut ctx.accounts.campaign;
