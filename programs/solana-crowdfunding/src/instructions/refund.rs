@@ -12,8 +12,8 @@ pub struct Refund<'info> {
     pub donor: Signer<'info>,
 
     #[account(
-        mut, 
-        seeds= [b"vault", campaign.key().as_ref()],
+        mut,
+        seeds = [b"vault", campaign.key().as_ref()],
         bump,
     )]
     pub vault: SystemAccount<'info>,
@@ -25,7 +25,7 @@ pub struct Refund<'info> {
     )]
     pub contribution: Account<'info, Contribution>,
 
-    pub system_program:Program<'info, System>,
+    pub system_program: Program<'info, System>,
 }
 
 /// Refunds donor if campaign is cancelled or goal not reached after deadline.
@@ -34,6 +34,7 @@ pub fn refund_handler(ctx: Context<Refund>) -> Result<()> {
     let campaign = &mut ctx.accounts.campaign;
     let contribution = &mut ctx.accounts.contribution;
     let amount = contribution.amount;
+    require!(amount > 0, CrowdfundingError::AmountZero);
 
     let clock = Clock::get()?;
     let current_time = clock.unix_timestamp;
