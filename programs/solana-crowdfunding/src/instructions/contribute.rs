@@ -36,6 +36,7 @@ pub fn contribute_handler(ctx: Context<Contribute>, amount: u64) -> Result<()> {
     let clock = Clock::get()?;
     let current_time = clock.unix_timestamp;
 
+    require!(amount > 0, CrowdfundingError::AmountZero);
     require!(!campaign.cancelled, CrowdfundingError::CampaignCancelled);
     require!(current_time < campaign.deadline, CrowdfundingError::DeadlinePassed);
 

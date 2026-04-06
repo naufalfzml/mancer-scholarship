@@ -26,4 +26,6 @@ pub enum CrowdfundingError {
     DescriptionTooLong,
     #[msg("Campaign is not cancelled and deadline not passed or goal reached")]
     RefundNotAllowed,
+    #[msg("Contribution amount must be greater than zero")]
+    AmountZero,
 }

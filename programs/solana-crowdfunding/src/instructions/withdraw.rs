@@ -28,10 +28,11 @@ pub fn withdraw_handler(ctx: Context<Withdraw>) -> Result<()> {
     let current_time = clock.unix_timestamp;
     let amount = ctx.accounts.vault.lamports();
 
+    require!(!campaign.cancelled, CrowdfundingError::CampaignCancelled);
     require!(campaign.raised >= campaign.goal, CrowdfundingError::GoalNotReached);
     require!(current_time >= campaign.deadline, CrowdfundingError::DeadlineNotPassed);
     require!(ctx.accounts.creator.key() == campaign.creator, CrowdfundingError::NotCreator);
-    require!(campaign.claimed == false, CrowdfundingError::AlreadyClaimed);
+    require!(!campaign.claimed, CrowdfundingError::AlreadyClaimed);
 
     system_program::transfer(
         CpiContext::new_with_signer(

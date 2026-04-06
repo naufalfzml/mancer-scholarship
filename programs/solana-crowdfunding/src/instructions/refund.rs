@@ -38,8 +38,7 @@ pub fn refund_handler(ctx: Context<Refund>) -> Result<()> {
     let current_time = clock.unix_timestamp;
 
     // Allow refund if: campaign cancelled OR (deadline passed AND goal not reached)
-    let can_refund = campaign.cancelled
-        || (current_time >= campaign.deadline && campaign.raised < campaign.goal);
+    let can_refund = campaign.cancelled || (current_time >= campaign.deadline && campaign.raised < campaign.goal);
     require!(can_refund, CrowdfundingError::RefundNotAllowed);
 
     system_program::transfer(
