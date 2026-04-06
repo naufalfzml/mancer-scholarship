@@ -16,4 +16,14 @@ pub enum CrowdfundingError {
     NotCreator,
     #[msg("Campaign already claimed")]
     AlreadyClaimed,
+    #[msg("Deadline Passed")]
+    DeadlinePassed,
+    #[msg("Campaign is cancelled")]
+    CampaignCancelled,
+    #[msg("Title too long (max 50 chars)")]
+    TitleTooLong,
+    #[msg("Description too long (max 200 chars)")]
+    DescriptionTooLong,
+    #[msg("Campaign is not cancelled and deadline not passed or goal reached")]
+    RefundNotAllowed,
 }

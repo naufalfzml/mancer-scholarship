@@ -16,19 +16,30 @@ pub struct CreateCampaign<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn create_campaign_handler(ctx: Context<CreateCampaign>, goal: u64, deadline: i64) -> Result<()> {
+pub fn create_campaign_handler(
+    ctx: Context<CreateCampaign>,
+    goal: u64,
+    deadline: i64,
+    title: String,
+    description: String,
+) -> Result<()> {
     let clock = Clock::get()?;
     let current_time = clock.unix_timestamp;
     let campaign = &mut ctx.accounts.campaign;
 
     require!(deadline > current_time, CrowdfundingError::DeadlineInPast);
     require!(goal > 0, CrowdfundingError::GoalZero);
+    require!(title.len() <= Campaign::MAX_TITLE_LEN, CrowdfundingError::TitleTooLong);
+    require!(description.len() <= Campaign::MAX_DESC_LEN, CrowdfundingError::DescriptionTooLong);
 
     campaign.creator = ctx.accounts.creator.key();
     campaign.goal = goal;
     campaign.raised = 0;
     campaign.deadline = deadline;
     campaign.claimed = false;
+    campaign.cancelled = false;
+    campaign.title = title;
+    campaign.description = description;
 
     msg!("Campaign created: goal={}, deadline={}", goal, deadline);
 

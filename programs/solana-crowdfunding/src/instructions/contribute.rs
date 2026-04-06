@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 use crate::state::{Campaign, Contribution};
+use crate::error::CrowdfundingError;
 use anchor_lang::system_program;
 
 #[derive(Accounts)]
@@ -32,6 +33,11 @@ pub fn contribute_handler(ctx: Context<Contribute>, amount: u64) -> Result<()> {
     let campaign_key = ctx.accounts.campaign.key();
     let campaign = &mut ctx.accounts.campaign;
     let contribution = &mut ctx.accounts.contribution;
+    let clock = Clock::get()?;
+    let current_time = clock.unix_timestamp;
+
+    require!(!campaign.cancelled, CrowdfundingError::CampaignCancelled);
+    require!(current_time < campaign.deadline, CrowdfundingError::DeadlinePassed);
 
     system_program::transfer(
         CpiContext::new(

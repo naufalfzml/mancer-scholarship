@@ -15,8 +15,14 @@ declare_id!("8RjcjbiGt6FxemB4mG3yHvvmnKN6yEQPiwt4a9NDtUH");
 pub mod solana_crowdfunding {
     use super::*;
 
-    pub fn create_campaign(ctx: Context<CreateCampaign>, goal: u64, deadline: i64) -> Result<()> {
-        create_campaign::create_campaign_handler(ctx, goal, deadline)
+    pub fn create_campaign(
+        ctx: Context<CreateCampaign>,
+        goal: u64,
+        deadline: i64,
+        title: String,
+        description: String,
+    ) -> Result<()> {
+        create_campaign::create_campaign_handler(ctx, goal, deadline, title, description)
     }
 
     pub fn contribute_campaign(ctx: Context<Contribute>, amount: u64) -> Result<()> {
@@ -29,5 +35,9 @@ pub mod solana_crowdfunding {
 
     pub fn refund(ctx: Context<Refund>) -> Result<()> {
         refund::refund_handler(ctx)
+    }
+
+    pub fn cancel_campaign(ctx: Context<CancelCampaign>) -> Result<()> {
+        cancel_campaign::cancel_campaign_handler(ctx)
     }
 }

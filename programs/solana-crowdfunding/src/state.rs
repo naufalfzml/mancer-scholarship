@@ -7,10 +7,16 @@ pub struct Campaign {
     pub raised: u64,
     pub deadline: i64,
     pub claimed: bool,
+    pub cancelled: bool,
+    pub title: String,
+    pub description: String,
 }
 
 impl Campaign {
-    pub const INIT_SPACE: usize = 32 + 8 + 8 + 8 + 1;
+    pub const MAX_TITLE_LEN: usize = 50;
+    pub const MAX_DESC_LEN: usize = 200;
+    // 32 + 8 + 8 + 8 + 1 + 1 + (4 + 50) + (4 + 200)
+    pub const INIT_SPACE: usize = 32 + 8 + 8 + 8 + 1 + 1 + (4 + Self::MAX_TITLE_LEN) + (4 + Self::MAX_DESC_LEN);
 }
 
 #[account]
