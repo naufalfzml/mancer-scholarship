@@ -16,18 +16,18 @@ pub mod solana_crowdfunding {
     use super::*;
 
     pub fn create_campaign(ctx: Context<CreateCampaign>, goal: u64, deadline: i64) -> Result<()> {
-        create_campaign::handler(ctx, goal, deadline)
+        create_campaign::create_campaign_handler(ctx, goal, deadline)
     }
 
     pub fn contribute_campaign(ctx: Context<Contribute>, amount: u64) -> Result<()> {
-        contribute::handler(ctx, amount)
+        contribute::contribute_handler(ctx, amount)
     }
 
     pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
-        withdraw::handler(ctx)
+        withdraw::withdraw_handler(ctx)
     }
 
     pub fn refund(ctx: Context<Refund>) -> Result<()> {
-        refund::handler(ctx)
+        refund::refund_handler(ctx)
     }
 }

@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 use crate::state::{Campaign, Contribution};
+use anchor_lang::system_program;
 
 #[derive(Accounts)]
 pub struct Contribute<'info> {
@@ -27,13 +28,14 @@ pub struct Contribute<'info> {
     pub vault: SystemAccount<'info>
 }
 
-pub fn handler(ctx: Context<Contribute>, amount: u64) -> Result<()> {
+pub fn contribute_handler(ctx: Context<Contribute>, amount: u64) -> Result<()> {
+    let campaign_key = ctx.accounts.campaign.key();
     let campaign = &mut ctx.accounts.campaign;
     let contribution = &mut ctx.accounts.contribution;
 
     system_program::transfer(
         CpiContext::new(
-            ctx.accounts.system_program.to_account_info(),
+            ctx.accounts.system_program.key(),
             system_program::Transfer {
                 from: ctx.accounts.donor.to_account_info(),
                 to: ctx.accounts.vault.to_account_info(),
@@ -45,7 +47,9 @@ pub fn handler(ctx: Context<Contribute>, amount: u64) -> Result<()> {
     campaign.raised += amount;
     contribution.donor = ctx.accounts.donor.key();
     contribution.amount += amount;
-    contribution.campaign = ctx.accounts.campaign.key();
+    contribution.campaign = campaign_key;
+
+    msg!("Contributed: {} lamports, total={}", amount, campaign.raised);
 
     Ok(())
 }

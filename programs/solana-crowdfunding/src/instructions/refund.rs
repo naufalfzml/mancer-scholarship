@@ -1,5 +1,7 @@
 use anchor_lang::prelude::*;
 use crate::state::{Campaign, Contribution};
+use crate::error::CrowdfundingError;
+use anchor_lang::system_program;
 
 #[derive(Accounts)]
 pub struct Refund<'info> {
@@ -26,7 +28,8 @@ pub struct Refund<'info> {
     pub system_program:Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<Refund>) -> Result<()> {
+pub fn refund_handler(ctx: Context<Refund>) -> Result<()> {
+    let campaign_key = ctx.accounts.campaign.key();
     let campaign = &mut ctx.accounts.campaign;
     let contribution = &mut ctx.accounts.contribution;
     let amount = contribution.amount;
@@ -34,21 +37,23 @@ pub fn handler(ctx: Context<Refund>) -> Result<()> {
     let clock = Clock::get()?;
     let current_time = clock.unix_timestamp;
 
-    require!(campaign.raised < campaign.goal);
-    require!(current_time > campaign.deadline);
+    require!(campaign.raised < campaign.goal, CrowdfundingError::GoalReached);
+    require!(current_time >= campaign.deadline, CrowdfundingError::DeadlineNotPassed);
 
     system_program::transfer(
         CpiContext::new_with_signer(
-            ctx.accounts.system_program.to_account_info(),
+            ctx.accounts.system_program.key(),
             system_program::Transfer {
                 from: ctx.accounts.vault.to_account_info(),
                 to: ctx.accounts.donor.to_account_info(),
             },
-            &[&[b"vault", ctx.accounts.campaign.key().as_ref(), &[ctx.bumps.vault]]],
+            &[&[b"vault", campaign_key.as_ref(), &[ctx.bumps.vault]]],
         ),
         amount,
     )?;
     contribution.amount = 0;
     campaign.raised -= amount;
+
+    msg!("Refunded: {} lamports", amount);
     Ok(())
 }
