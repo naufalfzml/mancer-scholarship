@@ -766,6 +766,68 @@ describe("solana-crowdfunding", () => {
       }
     });
 
+    it("fails on double refund", async () => {
+      const { campaign } = await createCampaign(
+        null,
+        10 * LAMPORTS_PER_SOL,
+        3
+      );
+      const donor = Keypair.generate();
+      await airdrop(donor.publicKey);
+
+      const [contributionPda] = PublicKey.findProgramAddressSync(
+        [
+          Buffer.from("contribution"),
+          campaign.publicKey.toBuffer(),
+          donor.publicKey.toBuffer(),
+        ],
+        program.programId
+      );
+      const [vaultPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("vault"), campaign.publicKey.toBuffer()],
+        program.programId
+      );
+
+      await program.methods
+        .contributeCampaign(new BN(5 * LAMPORTS_PER_SOL))
+        .accounts({
+          campaign: campaign.publicKey,
+          donor: donor.publicKey,
+          contribution: contributionPda,
+          systemProgram: SystemProgram.programId,
+          vault: vaultPda,
+        })
+        .signers([donor])
+        .rpc();
+
+      await sleep(4000);
+
+      const refundAccounts = {
+        campaign: campaign.publicKey,
+        donor: donor.publicKey,
+        vault: vaultPda,
+        contribution: contributionPda,
+        systemProgram: SystemProgram.programId,
+      };
+
+      await program.methods
+        .refund()
+        .accounts(refundAccounts)
+        .signers([donor])
+        .rpc();
+
+      try {
+        await program.methods
+          .refund()
+          .accounts(refundAccounts)
+          .signers([donor])
+          .rpc();
+        expect.fail("Should have failed");
+      } catch (err: any) {
+        expect(err.toString()).to.include("AmountZero");
+      }
+    });
+
     it("refunds immediately after cancel", async () => {
       const { campaign } = await createCampaign(
         null,
